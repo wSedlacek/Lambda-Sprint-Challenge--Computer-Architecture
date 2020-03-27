@@ -1,4 +1,4 @@
-from typing import Callable, TYPE_CHECKING
+from typing import Callable, List, TYPE_CHECKING
 
 
 if TYPE_CHECKING:
@@ -11,36 +11,21 @@ class ALU:
     def __init__(self, cpu: "CPU"):
         self.cpu = cpu
 
-    def one_reg_operation(self, alu_operation: Callable):
+    def reg_operation(self, alu_operation: Callable):
         """
-        Build an ALU operation that takes only one register
-        and sets the result to that same register
+        Build an ALU operation that uses an arbitrary number
+        of registers and sets the result to the first register
         """
 
-        def operation(reg_a: int):
-            a = self.cpu.registers[reg_a]
-            self.cpu.registers[reg_a] = alu_operation(a)
+        def operation(*registers: List[int]):
+            values = [self.cpu.registers[reg] for reg in registers]
+            self.cpu.registers[registers[0]] = alu_operation(*values)
 
             return 1
 
         return operation
 
-    def two_reg_operation(self, alu_operation: Callable):
-        """
-        Build an ALU operation that uses two registers and
-        sets the result to the first register
-        """
-
-        def operation(reg_a: int, reg_b: int):
-            a = self.cpu.registers[reg_a]
-            b = self.cpu.registers[reg_b]
-            self.cpu.registers[reg_a] = alu_operation(a, b)
-
-            return 1
-
-        return operation
-
-    def compare_operation(self, reg_a: int, reg_b: int):
+    def CMP(self, reg_a: int, reg_b: int):
         """
         Compare the two registers and set CPU flags based on
         the results
@@ -69,7 +54,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a + b)
+        return self.reg_operation(lambda a, b: a + b)
 
     @property
     def SUB(self):
@@ -86,7 +71,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a - b)
+        return self.reg_operation(lambda a, b: a - b)
 
     @property
     def MUL(self):
@@ -102,7 +87,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a * b)
+        return self.reg_operation(lambda a, b: a * b)
 
     @property
     def DIV(self):
@@ -122,7 +107,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a / b)
+        return self.reg_operation(lambda a, b: a / b)
 
     @property
     def MOD(self):
@@ -142,7 +127,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a % b)
+        return self.reg_operation(lambda a, b: a % b)
 
     @property
     def INC(self):
@@ -159,7 +144,7 @@ class ALU:
         ```
         """
 
-        return self.one_reg_operation(lambda a: a + 1)
+        return self.reg_operation(lambda a: a + 1)
 
     @property
     def DEC(self):
@@ -175,7 +160,7 @@ class ALU:
         ```
         """
 
-        return self.one_reg_operation(lambda a: a - 1)
+        return self.reg_operation(lambda a: a - 1)
 
     @property
     def CMP(self):
@@ -216,7 +201,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a & b)
+        return self.reg_operation(lambda a, b: a & b)
 
     @property
     def NOT(self):
@@ -233,7 +218,7 @@ class ALU:
         ```
         """
 
-        return self.one_reg_operation(lambda a: ~a)
+        return self.reg_operation(lambda a: ~a)
 
     @property
     def OR(self):
@@ -251,7 +236,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a | b)
+        return self.reg_operation(lambda a, b: a | b)
 
     @property
     def XOR(self):
@@ -269,7 +254,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a ^ b)
+        return self.reg_operation(lambda a, b: a ^ b)
 
     @property
     def SHL(self):
@@ -284,7 +269,7 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a << b)
+        return self.reg_operation(lambda a, b: a << b)
 
     @property
     def SHR(self):
@@ -299,4 +284,4 @@ class ALU:
         ```
         """
 
-        return self.two_reg_operation(lambda a, b: a >> b)
+        return self.reg_operation(lambda a, b: a >> b)
