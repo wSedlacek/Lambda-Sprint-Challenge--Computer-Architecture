@@ -38,9 +38,9 @@ In this code challenge, you will add _conditional jumps_ (AKA _conditional branc
 
 Options for submission, whichever is easier for you:
 
-* Copy your source into this repo, or...
+- Copy your source into this repo, or...
 
-* Submit a PR for the Sprint Challenge from the `Computer-Architecture` repo
+- Submit a PR for the Sprint Challenge from the `Computer-Architecture` repo
   you've been using all along.
 
 ## Minimum Viable Product
@@ -66,13 +66,13 @@ Validate your work through testing and ensure that your code operates as designe
 [Here is some code](sctest.ls8) that exercises the above instructions. It should
 print:
 
-```
+```txt
 1
 4
 5
 ```
 
-```
+```ls8
 # Code to test the Sprint Challenge
 #
 # Expected output:
