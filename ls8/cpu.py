@@ -1,4 +1,4 @@
-from alu import ALU
+from alu_ext import ALU_EXT
 from datetime import datetime, timedelta
 from select import select
 from sys import stdin
@@ -32,7 +32,7 @@ class CPU:
         self.flags = {'E': 0, 'L': 0, 'G': 0}
         self.program_counter = -1
 
-        alu = ALU(self)
+        alu = ALU_EXT(self)
 
         self.operations = {}
         self.operations[0b00000000] = self.NOP
@@ -69,6 +69,7 @@ class CPU:
         self.operations[0b10101011] = alu.XOR
         self.operations[0b10101100] = alu.SHL
         self.operations[0b10101101] = alu.SHR
+        self.operations[0b10110000] = alu.ADDI
 
     @property
     def next_byte(self):
