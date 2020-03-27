@@ -60,11 +60,11 @@ class CPU:
         self.operations[0b10100010] = alu.MUL
         self.operations[0b10100011] = alu.DIV
         self.operations[0b10100100] = alu.MOD
-        self.operations[0b10100101] = alu.INC
-        self.operations[0b10100110] = alu.DEC
+        self.operations[0b01100101] = alu.INC
+        self.operations[0b01100110] = alu.DEC
         self.operations[0b10100111] = alu.CMP
         self.operations[0b10101000] = alu.AND
-        self.operations[0b10101001] = alu.NOT
+        self.operations[0b01101001] = alu.NOT
         self.operations[0b10101010] = alu.OR
         self.operations[0b10101011] = alu.XOR
         self.operations[0b10101100] = alu.SHL
