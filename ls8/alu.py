@@ -25,7 +25,7 @@ class ALU:
 
         return operation
 
-    def CMP(self, reg_a: int, reg_b: int):
+    def compare_operation(self, reg_a: int, reg_b: int):
         """
         Compare the two registers and set CPU flags based on
         the results
