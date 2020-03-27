@@ -146,7 +146,14 @@ class CPU:
         operation = self.next_byte
 
         if operation in self.operations:
-            return self.operations[operation]()
+            args = []
+            if operation & (1 << 7):
+                args = [self.next_byte, self.next_byte]
+            elif operation & (1 << 6):
+                args = [self.next_byte]
+
+            return self.operations[operation](*args)
+
         else:
             raise Exception("Unsupported instruction")
 
@@ -280,7 +287,7 @@ class CPU:
 
         return 1
 
-    def PUSH(self):
+    def PUSH(self, reg_a: int):
         """
         `PUSH register`
 
@@ -297,14 +304,12 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
         value = self.registers[reg_a]
-
         self.stack_push(value)
 
         return 1
 
-    def POP(self):
+    def POP(self, reg_a: int):
         """
         `POP register`
 
@@ -320,13 +325,11 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
-
         self.registers[reg_a] = self.stack_pop()
 
         return 1
 
-    def PRN(self):
+    def PRN(self, reg_a: int):
         """
         `PRN register` pseudo-instruction
 
@@ -342,14 +345,12 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
         value = self.registers[reg_a]
-
         print(value)
 
         return 1
 
-    def PRA(self):
+    def PRA(self, reg_a: int):
         """
         `PRA register` pseudo-instruction
 
@@ -365,14 +366,12 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
         value = self.registers[reg_a]
-
         print(chr(value), end='')
 
         return 1
 
-    def CALL(self):
+    def CALL(self, reg_a: int):
         """
         `CALL register`
 
@@ -393,15 +392,13 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
         to = self.registers[reg_a]
-
         self.stack_push(self.program_counter)
         self.program_counter = to - 1
 
         return 1
 
-    def INT(self):
+    def INT(self, reg_a: int):
         """
         `INT register`
 
@@ -417,14 +414,12 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
         bit = self.registers[reg_a]
-
         self.registers[interrupt_status] |= 1 << bit
 
         return 1
 
-    def JMP(self):
+    def JMP(self, reg_a: int):
         """
         `JMP register`
 
@@ -439,14 +434,12 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
         to = self.registers[reg_a]
-
         self.program_counter = to - 1
 
         return 1
 
-    def JEQ(self):
+    def JEQ(self, reg_a: int):
         """
         `JEQ register`
 
@@ -460,13 +453,11 @@ class CPU:
         """
 
         if self.flags['E']:
-            self.JMP()
+            return self.JMP(reg_a)
         else:
-            self.next_byte
+            return 2
 
-        return 1
-
-    def JNE(self):
+    def JNE(self, reg_a: int):
         """
         `JNE register`
 
@@ -481,13 +472,11 @@ class CPU:
         """
 
         if not self.flags['E']:
-            self.JMP()
+            return self.JMP(reg_a)
         else:
-            self.next_byte
+            return 2
 
-        return 1
-
-    def JGT(self):
+    def JGT(self, reg_a: int):
         """
         `JGT register`
 
@@ -503,13 +492,11 @@ class CPU:
         """
 
         if self.flags['G']:
-            self.JMP()
+            return self.JMP(reg_a)
         else:
-            self.next_byte
+            return 2
 
-        return 1
-
-    def JLT(self):
+    def JLT(self, reg_a: int):
         """
         `JLT register`
 
@@ -525,13 +512,11 @@ class CPU:
         """
 
         if self.flags['L']:
-            self.JMP()
+            return self.JMP(reg_a)
         else:
-            self.next_byte
+            return 2
 
-        return 1
-
-    def JLE(self):
+    def JLE(self, reg_a: int):
         """
         `JLE register`
 
@@ -546,13 +531,11 @@ class CPU:
         """
 
         if self.flags['E'] or self.flags['L']:
-            self.JMP()
+            return self.JMP(reg_a)
         else:
-            self.next_byte
+            return 2
 
-        return 1
-
-    def JGE(self):
+    def JGE(self, reg_a: int):
         """
         `JGE register`
 
@@ -568,13 +551,11 @@ class CPU:
         """
 
         if self.flags['E'] or self.flags['G']:
-            self.JMP()
+            return self.JMP(reg_a)
         else:
-            self.next_byte
+            return 2
 
-        return 1
-
-    def LDI(self):
+    def LDI(self, reg_a: int, value: int):
         """
         `LDI register immediate`
 
@@ -587,14 +568,11 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
-        value = self.next_byte
-
         self.registers[reg_a] = value
 
         return 1
 
-    def LD(self):
+    def LD(self, reg_a: int, reg_b: int):
         """
         `LD registerA registerB`
 
@@ -609,16 +587,13 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
-        reg_b = self.next_byte
         address = self.registers[reg_b]
         value = self.ram[address]
-
         self.registers[reg_a] = value
 
         return 1
 
-    def ST(self):
+    def ST(self, reg_a: int, reg_b: int):
         """
         `ST registerA registerB`
 
@@ -633,11 +608,8 @@ class CPU:
         ```
         """
 
-        reg_a = self.next_byte
-        reg_b = self.next_byte
         address = self.registers[reg_a]
         value = self.registers[reg_b]
-
         self.ram[address] = value
 
         return 1

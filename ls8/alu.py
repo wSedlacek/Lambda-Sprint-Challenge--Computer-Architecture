@@ -17,10 +17,8 @@ class ALU:
         and sets the result to that same register
         """
 
-        def operation():
-            reg_a = self.cpu.next_byte
+        def operation(reg_a: int):
             a = self.cpu.registers[reg_a]
-
             self.cpu.registers[reg_a] = alu_operation(a)
 
             return 1
@@ -32,30 +30,24 @@ class ALU:
         Build an ALU operation that uses two registers and
         sets the result to the first register
         """
-        def operation():
-            reg_a = self.cpu.next_byte
-            reg_b = self.cpu.next_byte
 
+        def operation(reg_a: int, reg_b: int):
             a = self.cpu.registers[reg_a]
             b = self.cpu.registers[reg_b]
-
             self.cpu.registers[reg_a] = alu_operation(a, b)
 
             return 1
 
         return operation
 
-    def compare_operation(self):
+    def compare_operation(self, reg_a: int, reg_b: int):
         """
         Compare the two registers and set CPU flags based on
         the results
         """
-        reg_a = self.cpu.next_byte
-        reg_b = self.cpu.next_byte
 
         a = self.cpu.registers[reg_a]
         b = self.cpu.registers[reg_b]
-
         self.cpu.flags['E'] = int(a == b)
         self.cpu.flags['L'] = int(a < b)
         self.cpu.flags['G'] = int(a > b)
